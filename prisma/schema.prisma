@@ -19,14 +19,15 @@ model User {
   partner           User?            @relation("PartnerConnection", fields: [partnerId], references: [id])
   PartneredWith     User?            @relation("PartnerConnection")
   UserCardAnswers   UserCardAnswer[]
-  PurchasedCardSets CardSet[]        @relation("CardSetPurchases")
+  Cardsets CardSet[]        @relation("CardSetPurchases")
   Dares             Dare[]
   Invitation        Invitation[]
 }
 
 model Card {
   id        String   @id @default(uuid())
-  question  String
+  questionTop  String
+  questionBottom String
   cardSetId String   @map("card_set_id")
   CardSet   CardSet  @relation(fields: [cardSetId], references: [id])
   createdAt DateTime @default(now())
@@ -39,7 +40,7 @@ model Card {
 model UserCardAnswer {
   userId    String
   cardId    String
-  answer    String   @map("answer") // You can set enums here
+  answer    Answer
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -61,7 +62,7 @@ model CardSet {
 
 model Dare {
   id        String   @id @default(uuid())
-  status    String // Set enums for status
+  status    DareStatus
   due       DateTime
   points    Int
   cardId    String   @map("card_id")
@@ -79,4 +80,17 @@ model Invitation {
   code      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum Answer {
+  Yes
+  No
+  Maybe
+}
+
+enum DareStatus {
+  Pending
+  Accepted
+  Declined
+  Completed
 }

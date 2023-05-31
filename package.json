@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_OPTIONS='--experimental-specifier-resolution=node' node app.js"
+    "start": "NODE_OPTIONS='--experimental-specifier-resolution=node' node app.js",
+    "bm": "npx prisma migrate dev --name update && npx prisma generate"
   },
   "keywords": [],
   "author": "",
