@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String           @id @default(uuid())
+  name              String
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  partnerId         String?          @unique @map("partner_id")
+  partner           User?            @relation("PartnerConnection", fields: [partnerId], references: [id])
+  PartneredWith     User?            @relation("PartnerConnection")
+  UserCardAnswers   UserCardAnswer[]
+  PurchasedCardSets CardSet[]        @relation("CardSetPurchases")
+  Dares             Dare[]
+  Invitation        Invitation[]
+}
+
+model Card {
+  id        String   @id @default(uuid())
+  question  String
+  cardSetId String   @map("card_set_id")
+  CardSet   CardSet  @relation(fields: [cardSetId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  UserCardAnswers UserCardAnswer[]
+  Dare            Dare[]
+}
+
+model UserCardAnswer {
+  userId    String
+  cardId    String
+  answer    String   @map("answer") // You can set enums here
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id])
+  Card Card @relation(fields: [cardId], references: [id])
+
+  @@id([userId, cardId])
+}
+
+model CardSet {
+  id        String   @id @default(uuid())
+  theme     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Cards Card[]
+  Users User[] @relation("CardSetPurchases")
+}
+
+model Dare {
+  id        String   @id @default(uuid())
+  status    String // Set enums for status
+  due       DateTime
+  points    Int
+  cardId    String   @map("card_id")
+  Card      Card     @relation(fields: [cardId], references: [id])
+  userId    String   @map("user_id")
+  User      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invitation {
+  id        String   @id @default(uuid())
+  inviterId String   @map("inviter_id")
+  User      User     @relation(fields: [inviterId], references: [id])
+  code      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
