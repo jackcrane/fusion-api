@@ -28,6 +28,7 @@ model Card {
   id        String   @id @default(uuid())
   questionTop  String
   questionBottom String
+  hasPosition    Boolean @default(true)
   cardSetId String   @map("card_set_id")
   CardSet   CardSet  @relation(fields: [cardSetId], references: [id])
   createdAt DateTime @default(now())
